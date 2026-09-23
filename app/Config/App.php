@@ -7,7 +7,7 @@ use CodeIgniter\Config\BaseConfig;
 class App extends BaseConfig
 {
     /** Application URL when served by XAMPP/Apache. */
-    public string $baseURL = 'http://localhost/demoElectric/';
+    public string $baseURL = 'http://localhost/Caburao_DemoElectric/';
 
     /** @var list<string> */
     public array $allowedHostnames = [];

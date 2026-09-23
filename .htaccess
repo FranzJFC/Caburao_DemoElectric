@@ -10,7 +10,7 @@ Options -Indexes
 <IfModule mod_rewrite.c>
 	Options +FollowSymlinks
 	RewriteEngine On
-	RewriteBase /demoElectric/
+	RewriteBase /Caburao_DemoElectric/
 
 	# Public assets are kept in CodeIgniter's public directory.
 	RewriteRule ^assets/(.*)$ public/assets/$1 [L]
