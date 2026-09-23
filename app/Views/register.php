@@ -23,6 +23,7 @@
             <div class="col-md-6"><label class="form-label" for="password">Password *</label><div class="password-field"><input class="form-control" type="password" id="password" name="password" minlength="8" required><button type="button" class="password-toggle" aria-label="Show password"><i class="fas fa-eye"></i></button></div><div class="password-strength" aria-live="polite"></div><small class="text-muted">Use at least 8 characters.</small></div>
             <div class="col-md-6"><label class="form-label" for="confirm_password">Confirm password *</label><input class="form-control" type="password" id="confirm_password" name="confirm_password" minlength="8" required></div>
             <div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="terms" name="terms" <?= old('terms') ? 'checked' : '' ?> required><label class="form-check-label" for="terms">I agree to the terms of service and privacy policy.</label></div></div>
+            <div class="col-12"><div class="form-check"><input class="form-check-input" type="checkbox" value="1" id="newsletter" name="newsletter" <?= old('newsletter') ? 'checked' : '' ?>><label class="form-check-label" for="newsletter">Subscribe to our newsletter for electrical tips and special offers.</label></div></div>
             <div class="col-12"><button class="btn btn-primary btn-lg w-100" type="submit"><i class="fas fa-user-plus me-2"></i>Create account</button></div>
         </div>
     </form>
