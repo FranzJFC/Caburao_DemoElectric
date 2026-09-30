@@ -1,6 +1,10 @@
 # Disable directory browsing
 Options -Indexes
 
+<Files ".env">
+    Require all denied
+</Files>
+
 # ----------------------------------------------------------------------
 # Rewrite engine
 # ----------------------------------------------------------------------

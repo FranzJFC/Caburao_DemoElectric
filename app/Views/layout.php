@@ -19,9 +19,16 @@
         </button>
         <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav ms-auto align-items-lg-center">
-                <?php foreach (['home' => '/', 'about' => 'about', 'services' => 'services', 'contact' => 'contact', 'register' => 'register'] as $label => $url): ?>
+                <?php foreach (['home' => '/', 'about' => 'about', 'services' => 'services', 'contact' => 'contact'] as $label => $url): ?>
                     <li class="nav-item"><a class="nav-link <?= ($page ?? '') === $label ? 'active' : '' ?>" href="<?= base_url($url) ?>"><?= ucfirst($label) ?></a></li>
                 <?php endforeach ?>
+                <?php if (session()->get('user_id')): ?>
+                    <li class="nav-item"><a class="nav-link <?= ($page ?? '') === 'dashboard' ? 'active' : '' ?>" href="<?= base_url('dashboard') ?>">Dashboard</a></li>
+                    <li class="nav-item"><form action="<?= base_url('logout') ?>" method="post" class="d-inline"><?= csrf_field() ?><button class="btn btn-outline-primary ms-lg-2" type="submit">Log out</button></form></li>
+                <?php else: ?>
+                    <li class="nav-item"><a class="nav-link <?= ($page ?? '') === 'register' ? 'active' : '' ?>" href="<?= base_url('register') ?>">Register</a></li>
+                    <li class="nav-item"><a class="btn btn-primary ms-lg-2" href="<?= base_url('login') ?>">Log in</a></li>
+                <?php endif ?>
             </ul>
         </div>
     </div>

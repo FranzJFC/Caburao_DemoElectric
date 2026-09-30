@@ -11,6 +11,7 @@ writable/session/*
 !writable/session/index.html
 writable/uploads/*
 !writable/uploads/index.html
+writable/debugbar/
 
 # Editor and OS metadata
 .idea/

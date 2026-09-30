@@ -10,7 +10,7 @@ class Register extends BaseController
     public function index(): string
     {
         return view('register', [
-            'title'      => 'Register - PowerFlow Electric',
+            'title'      => 'Register - Puihaha Electric',
             'page'       => 'register',
             'success'    => session()->getFlashdata('success'),
             'error'      => session()->getFlashdata('error'),
@@ -59,9 +59,9 @@ class Register extends BaseController
             );
         }
 
-        return redirect()->to('/register')->with(
+        return redirect()->to('/login')->with(
             'success',
-            'Registration successful! Welcome to PowerFlow Electric.'
+            'Registration successful! Log in to access your dashboard.'
         );
     }
 }

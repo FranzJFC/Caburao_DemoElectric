@@ -27,5 +27,6 @@
             <div class="col-12"><button class="btn btn-primary btn-lg w-100" type="submit"><i class="fas fa-user-plus me-2"></i>Create account</button></div>
         </div>
     </form>
+    <p class="text-center text-muted mt-4 mb-0">Already have an account? <a href="<?= base_url('login') ?>">Log in</a></p>
 </div></div></section>
 <?= $this->endSection() ?>
