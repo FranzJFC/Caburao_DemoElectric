@@ -9,6 +9,11 @@
                 <p class="mt-2 mb-0">Welcome, <?= esc($user['first_name']) ?></p>
             </header>
 
+            <?php if ($message = session()->getFlashdata('success')): ?><div class="alert alert-success" role="alert"><?= esc($message) ?></div><?php endif ?>
+            <?php if ($message = session()->getFlashdata('error')): ?><div class="alert alert-danger" role="alert"><?= esc($message) ?></div><?php endif ?>
+
+            <?php if ($is_admin): ?><div class="d-flex justify-content-end mb-4"><a class="btn btn-primary" href="<?= base_url('accounts/new') ?>"><i class="fas fa-plus me-1"></i>Add customer account</a></div><?php endif ?>
+
             <div class="row g-3 mb-4">
                 <?php foreach ([
                     ['total', 'Total Accounts', $total_accounts],
@@ -54,7 +59,13 @@
                                     <td><?= esc($account['phone']) ?></td>
                                     <td><?= esc(ucfirst($account['connection_type'])) ?></td>
                                     <td><span class="badge text-bg-<?= $badge ?>"><?= esc(ucfirst($account['status'])) ?></span></td>
-                                    <td><a class="btn btn-sm btn-outline-primary" href="<?= base_url('account/' . $account['id']) ?>">View</a></td>
+                                    <td><div class="d-flex gap-1">
+                                        <a class="btn btn-sm btn-outline-primary" href="<?= base_url('account/' . $account['id']) ?>">View</a>
+                                        <?php if ($is_admin): ?>
+                                            <a class="btn btn-sm btn-outline-secondary" href="<?= base_url('accounts/' . $account['id'] . '/edit') ?>">Edit</a>
+                                            <form method="post" action="<?= base_url('accounts/' . $account['id'] . '/delete') ?>" onsubmit="return confirm('Delete this customer account? This cannot be undone.');"><?= csrf_field() ?><button class="btn btn-sm btn-outline-danger" type="submit">Delete</button></form>
+                                        <?php endif ?>
+                                    </div></td>
                                 </tr>
                             <?php endforeach ?>
                         <?php endif ?>

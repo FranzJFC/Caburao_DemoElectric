@@ -23,12 +23,12 @@
                 <?= csrf_field() ?>
                 <div class="mb-3">
                     <label class="form-label" for="email">Email address</label>
-                    <input class="form-control" type="email" id="email" name="email" value="<?= esc($email ?? '') ?>" autocomplete="email" autofocus>
+                    <input class="form-control" type="email" id="email" name="email" value="<?= esc($email ?? '') ?>" autocomplete="email" required autofocus>
                 </div>
                 <div class="mb-4">
                     <label class="form-label" for="password">Password</label>
                     <div class="password-field">
-                        <input class="form-control" type="password" id="password" name="password" autocomplete="current-password">
+                        <input class="form-control" type="password" id="password" name="password" autocomplete="current-password" required>
                         <button type="button" class="password-toggle" aria-label="Show password"><i class="fas fa-eye"></i></button>
                     </div>
                 </div>

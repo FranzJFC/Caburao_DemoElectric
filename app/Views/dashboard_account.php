@@ -8,6 +8,8 @@
                 <p class="text-muted">Customer Account Details</p>
             </header>
             <a class="btn btn-secondary mb-4" href="<?= base_url('dashboard') ?>"><i class="fas fa-arrow-left me-2"></i>Back to Dashboard</a>
+            <?php if ($message = session()->getFlashdata('success')): ?><div class="alert alert-success" role="alert"><?= esc($message) ?></div><?php endif ?>
+            <?php if ($is_admin): ?><a class="btn btn-outline-primary mb-4" href="<?= base_url('accounts/' . $account['id'] . '/edit') ?>">Edit account</a><?php endif ?>
             <div class="card account-detail-card">
                 <div class="card-header"><h2 class="h4 mb-0">Account Information</h2></div>
                 <div class="card-body">

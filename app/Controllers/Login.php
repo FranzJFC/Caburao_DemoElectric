@@ -25,9 +25,19 @@ class Login extends BaseController
 
     public function authenticate(): RedirectResponse
     {
+        $submittedEmail = $this->request->getPost('email');
+        $email = is_string($submittedEmail) ? trim($submittedEmail) : '';
+        $password = $this->request->getPost('password');
+
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL) || ! is_string($password) || $password === '') {
+            return redirect()->to('/login')
+                ->with('login_email', $email)
+                ->with('error', 'Enter a valid email address and password.');
+        }
+
         try {
             $users = new User();
-            $user  = $users->where('is_active', true)->first();
+            $user  = $users->findByEmail($email);
         } catch (\Throwable $exception) {
             log_message('error', 'Login failed: {message}', ['message' => $exception->getMessage()]);
 
@@ -35,8 +45,10 @@ class Login extends BaseController
                 ->with('error', 'Login is temporarily unavailable. Please try again.');
         }
 
-        if (! $user) {
-            return redirect()->to('/login')->with('error', 'No active user is available.');
+        if (! $user || ! $user['is_active'] || ! $users->verifyPassword($password, $user['password'])) {
+            return redirect()->to('/login')
+                ->with('login_email', $email)
+                ->with('error', 'Invalid email or password.');
         }
 
         session()->regenerate(true);
