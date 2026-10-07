@@ -27,7 +27,7 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'caburao_app',
+        'username'     => 'root',
         'password'     => '',
         'database'     => 'electriccompany',
         'DBDriver'     => 'MySQLi',

@@ -29,7 +29,7 @@ class Dashboard extends BaseController
             $type = '';
         }
 
-        $query = $this->accountsFor($user);
+        $query = $this->accountsQuery();
 
         if ($search !== '') {
             $query->groupStart()
@@ -56,10 +56,10 @@ class Dashboard extends BaseController
             'user'               => $user,
             'accounts'           => $accounts,
             'pager'              => $query->pager,
-            'total_accounts'     => $this->accountsFor($user)->countAllResults(),
-            'active_accounts'    => $this->accountsFor($user)->where('status', 'active')->countAllResults(),
-            'inactive_accounts'  => $this->accountsFor($user)->where('status', 'inactive')->countAllResults(),
-            'suspended_accounts' => $this->accountsFor($user)->where('status', 'suspended')->countAllResults(),
+            'total_accounts'     => $this->accountsQuery()->countAllResults(),
+            'active_accounts'    => $this->accountsQuery()->where('status', 'active')->countAllResults(),
+            'inactive_accounts'  => $this->accountsQuery()->where('status', 'inactive')->countAllResults(),
+            'suspended_accounts' => $this->accountsQuery()->where('status', 'suspended')->countAllResults(),
             'search_keyword'     => $search,
             'filter_status'      => $status,
             'filter_type'        => $type,
@@ -75,7 +75,7 @@ class Dashboard extends BaseController
             return redirect()->to('/login')->with('error', 'Please log in to continue.');
         }
 
-        $account = $this->accountsFor($user)->where('id', $id)->first();
+        $account = $this->accountsQuery()->where('id', $id)->first();
 
         if ($account === null) {
             throw PageNotFoundException::forPageNotFound();
@@ -270,15 +270,9 @@ class Dashboard extends BaseController
         return $user;
     }
 
-    private function accountsFor(array $user): CustomerAccount
+    private function accountsQuery(): CustomerAccount
     {
-        $accounts = new CustomerAccount();
-
-        if ($user['user_type'] !== 'admin') {
-            $accounts->where('email', $user['email']);
-        }
-
-        return $accounts;
+        return new CustomerAccount();
     }
 
     private function queryValue(string $name): string

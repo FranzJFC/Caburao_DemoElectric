@@ -5,7 +5,7 @@
         <div class="account-dashboard-panel">
             <header class="text-center mb-4">
                 <h1><i class="fas fa-bolt text-warning me-2"></i>Puihaha Electric Company</h1>
-                <p class="text-muted mb-0"><?= $is_admin ? 'Customer Account Management System' : 'Your Customer Account' ?></p>
+                <p class="text-muted mb-0"><?= $is_admin ? 'Customer Account Management System' : 'Customer Account Directory' ?></p>
                 <p class="mt-2 mb-0">Welcome, <?= esc($user['first_name']) ?></p>
             </header>
 
@@ -48,7 +48,7 @@
                     <thead class="table-dark"><tr><th>Account Number</th><th>Customer Name</th><th>Email</th><th>Phone</th><th>Connection Type</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody>
                         <?php if (empty($accounts)): ?>
-                            <tr><td colspan="7" class="text-center text-muted py-4"><?= $is_admin ? 'No accounts found.' : 'No customer account is linked to your email address.' ?></td></tr>
+                            <tr><td colspan="7" class="text-center text-muted py-4">No accounts found.</td></tr>
                         <?php else: ?>
                             <?php foreach ($accounts as $account): ?>
                                 <?php $badge = ['active' => 'success', 'inactive' => 'danger', 'suspended' => 'warning'][$account['status']] ?? 'secondary'; ?>
@@ -87,7 +87,6 @@
                     <p class="mb-1"><strong>Email:</strong> <?= esc($user['email']) ?></p>
                     <?php if (! empty($user['phone'])): ?><p class="mb-1"><strong>Phone:</strong> <?= esc($user['phone']) ?></p><?php endif ?>
                     <?php if (! empty($user['address'])): ?><p class="mb-0"><strong>Service address:</strong> <?= esc(implode(', ', array_filter([$user['address'], $user['city'], $user['state'], $user['zip_code']]))) ?></p><?php endif ?>
-                    <?php if (empty($accounts)): ?><p class="mt-3 mb-0">If you expected an existing service account here, <a href="<?= base_url('contact') ?>">contact us</a> to link it to your email.</p><?php endif ?>
                 </section>
             <?php endif ?>
         </div>
