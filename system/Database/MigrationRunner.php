@@ -16,11 +16,10 @@ namespace CodeIgniter\Database;
 use CodeIgniter\CLI\CLI;
 use CodeIgniter\Events\Events;
 use CodeIgniter\Exceptions\ConfigException;
+use CodeIgniter\Exceptions\RuntimeException;
 use CodeIgniter\I18n\Time;
 use Config\Database;
 use Config\Migrations as MigrationsConfig;
-use Config\Services;
-use RuntimeException;
 use stdClass;
 
 /**
@@ -48,7 +47,7 @@ class MigrationRunner
      *
      * @var string|null
      */
-    protected $namespace;
+    protected $namespace = APP_NAMESPACE;
 
     /**
      * The database Group to migrate.
@@ -136,8 +135,6 @@ class MigrationRunner
     {
         $this->enabled = $config->enabled ?? false;
         $this->table   = $config->table ?? 'migrations';
-
-        $this->namespace = APP_NAMESPACE;
 
         // Even if a DB connection is passed, since it is a test,
         // it is assumed to use the default group name
@@ -318,6 +315,8 @@ class MigrationRunner
      *
      * @param string $path Full path to a valid migration file
      * @param string $path Namespace of the target migration
+     *
+     * @return bool
      */
     public function force(string $path, string $namespace, ?string $group = null)
     {
@@ -390,7 +389,7 @@ class MigrationRunner
      */
     public function findMigrations(): array
     {
-        $namespaces = $this->namespace ? [$this->namespace] : array_keys(Services::autoloader()->getNamespace());
+        $namespaces = $this->namespace !== null ? [$this->namespace] : array_keys(service('autoloader')->getNamespace());
         $migrations = [];
 
         foreach ($namespaces as $namespace) {
@@ -415,7 +414,7 @@ class MigrationRunner
     public function findNamespaceMigrations(string $namespace): array
     {
         $migrations = [];
-        $locator    = Services::locator(true);
+        $locator    = service('locator', true);
 
         if (! empty($this->path)) {
             helper('filesystem');
@@ -451,11 +450,11 @@ class MigrationRunner
 
         $filename = basename($path, '.php');
 
-        if (! preg_match($this->regex, $filename)) {
+        if (preg_match($this->regex, $filename) !== 1) {
             return false;
         }
 
-        $locator = Services::locator(true);
+        $locator = service('locator', true);
 
         $migration = new stdClass();
 
@@ -525,7 +524,7 @@ class MigrationRunner
     {
         preg_match($this->regex, $migration, $matches);
 
-        return count($matches) ? $matches[1] : '0';
+        return $matches !== [] ? $matches[1] : '0';
     }
 
     /**
@@ -540,7 +539,7 @@ class MigrationRunner
     {
         preg_match($this->regex, $migration, $matches);
 
-        return count($matches) ? $matches[2] : '';
+        return $matches !== [] ? $matches[2] : '';
     }
 
     /**
@@ -576,6 +575,8 @@ class MigrationRunner
 
     /**
      * Truncates the history table.
+     *
+     * @return void
      */
     public function clearHistory()
     {
@@ -588,6 +589,8 @@ class MigrationRunner
      * Add a history to the table.
      *
      * @param object $migration
+     *
+     * @return void
      */
     protected function addHistory($migration, int $batch)
     {
@@ -606,7 +609,7 @@ class MigrationRunner
                 CLI::color(lang('Migrations.added'), 'yellow'),
                 $migration->namespace,
                 $migration->version,
-                $migration->class
+                $migration->class,
             );
         }
     }
@@ -615,6 +618,8 @@ class MigrationRunner
      * Removes a single history
      *
      * @param object $history
+     *
+     * @return void
      */
     protected function removeHistory($history)
     {
@@ -626,7 +631,7 @@ class MigrationRunner
                 CLI::color(lang('Migrations.removed'), 'yellow'),
                 $history->namespace,
                 $history->version,
-                $history->class
+                $history->class,
             );
         }
     }
@@ -646,13 +651,13 @@ class MigrationRunner
         }
 
         // If a namespace was specified then use it
-        if ($this->namespace) {
+        if ($this->namespace !== null) {
             $builder->where('namespace', $this->namespace);
         }
 
         $query = $builder->orderBy('id', 'ASC')->get();
 
-        return ! empty($query) ? $query->getResultObject() : [];
+        return empty($query) ? [] : $query->getResultObject();
     }
 
     /**
@@ -669,7 +674,7 @@ class MigrationRunner
             ->orderBy('id', $order)
             ->get();
 
-        return ! empty($query) ? $query->getResultObject() : [];
+        return empty($query) ? [] : $query->getResultObject();
     }
 
     /**
@@ -701,7 +706,7 @@ class MigrationRunner
             ->get()
             ->getResultObject();
 
-        $batch = is_array($batch) && count($batch)
+        $batch = is_array($batch) && $batch !== []
             ? end($batch)->batch
             : 0;
 
@@ -726,7 +731,7 @@ class MigrationRunner
             ->get()
             ->getResultObject();
 
-        return count($migration) ? $migration[0]->version : '0';
+        return $migration !== [] ? $migration[0]->version : '0';
     }
 
     /**
@@ -753,6 +758,8 @@ class MigrationRunner
     /**
      * Ensures that we have created our migrations table
      * in the database.
+     *
+     * @return void
      */
     public function ensureTable()
     {

@@ -217,7 +217,7 @@ abstract class BaseUtils
                 $line[] = $enclosure . str_replace(
                     $enclosure,
                     $enclosure . $enclosure,
-                    (string) $item
+                    (string) $item,
                 ) . $enclosure;
             }
 
@@ -250,7 +250,7 @@ abstract class BaseUtils
             $xml .= $tab . '<' . $element . '>' . $newline;
 
             foreach ($row as $key => $val) {
-                $val = (! empty($val)) ? xml_convert((string) $val) : '';
+                $val = empty($val) ? '' : xml_convert((string) $val);
 
                 $xml .= $tab . $tab . '<' . $key . '>' . $val . '</' . $key . '>' . $newline;
             }

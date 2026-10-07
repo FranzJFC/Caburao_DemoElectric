@@ -15,6 +15,7 @@ namespace CodeIgniter;
 
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\Exceptions\HTTPException;
+use CodeIgniter\HTTP\Exceptions\RedirectException;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -24,8 +25,6 @@ use Config\Validation;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class Controller
- *
  * @see \CodeIgniter\ControllerTest
  */
 class Controller
@@ -77,7 +76,7 @@ class Controller
      *
      * @return void
      *
-     * @throws HTTPException
+     * @throws HTTPException|RedirectException
      */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
@@ -105,7 +104,7 @@ class Controller
      *
      * @return void
      *
-     * @throws HTTPException
+     * @throws HTTPException|RedirectException
      */
     protected function forceHTTPS(int $duration = 31_536_000)
     {

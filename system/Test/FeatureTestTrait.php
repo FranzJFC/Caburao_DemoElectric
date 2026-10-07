@@ -13,13 +13,17 @@ declare(strict_types=1);
 
 namespace CodeIgniter\Test;
 
+use Closure;
 use CodeIgniter\Events\Events;
 use CodeIgniter\HTTP\Exceptions\RedirectException;
+use CodeIgniter\HTTP\Header;
 use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\Method;
 use CodeIgniter\HTTP\Request;
+use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\HTTP\SiteURI;
 use CodeIgniter\HTTP\URI;
+use CodeIgniter\Router\RouteCollection;
 use Config\App;
 use Config\Services;
 use Exception;
@@ -30,6 +34,12 @@ use ReflectionException;
  *
  * Provides additional utilities for doing full HTTP testing
  * against your application in trait format.
+ *
+ * @property array<int|string, mixed>           $session
+ * @property array<string, Header|list<Header>> $headers
+ * @property RouteCollection|null               $routes
+ *
+ * @mixin CIUnitTestCase
  */
 trait FeatureTestTrait
 {
@@ -42,7 +52,12 @@ trait FeatureTestTrait
      *    ['GET', 'home', 'Home::index'],
      * ]
      *
-     * @param array|null $routes Array to set routes
+     * @param array<int, array{
+     *      0: string,
+     *      1: string,
+     *      2: ((Closure(mixed...): (ResponseInterface|string|void)))|string,
+     *      3?: array<string, mixed>
+     *  }>|null $routes Array to set routes
      *
      * @return $this
      */
@@ -58,7 +73,7 @@ trait FeatureTestTrait
                     @trigger_error(
                         'Passing lowercase HTTP method "' . $route[0] . '" is deprecated.'
                         . ' Use uppercase HTTP method like "' . strtoupper($route[0]) . '".',
-                        E_USER_DEPRECATED
+                        E_USER_DEPRECATED,
                     );
                 }
 
@@ -84,7 +99,7 @@ trait FeatureTestTrait
     /**
      * Sets any values that should exist during this session.
      *
-     * @param array|null $values Array of values, or null to use the current $_SESSION
+     * @param array<int|string, mixed>|null $values Array of values, or null to use the current $_SESSION
      *
      * @return $this
      */
@@ -103,7 +118,7 @@ trait FeatureTestTrait
      *  'Authorization' => 'Token'
      * ])
      *
-     * @param array $headers Array of headers
+     * @param array<string, Header|list<Header>> $headers Array of headers
      *
      * @return $this
      */
@@ -168,7 +183,7 @@ trait FeatureTestTrait
             @trigger_error(
                 'Passing lowercase HTTP method "' . $method . '" is deprecated.'
                 . ' Use uppercase HTTP method like "' . strtoupper($method) . '".',
-                E_USER_DEPRECATED
+                E_USER_DEPRECATED,
             );
         }
 
@@ -179,8 +194,8 @@ trait FeatureTestTrait
         $method = strtoupper($method);
 
         // Simulate having a blank session
-        $_SESSION                  = [];
-        $_SERVER['REQUEST_METHOD'] = $method;
+        $_SESSION = [];
+        service('superglobals')->setServer('REQUEST_METHOD', $method);
 
         $request = $this->setupRequest($method, $path);
         $request = $this->setupHeaders($request);
@@ -189,7 +204,9 @@ trait FeatureTestTrait
         $request = $this->setRequestBody($request, $params);
 
         // Initialize the RouteCollection
-        if (! $routes = $this->routes) {
+        $routes = $this->routes;
+
+        if ($routes !== []) {
             $routes = service('routes')->loadRoutes();
         }
 
@@ -200,10 +217,10 @@ trait FeatureTestTrait
         Services::injectMock('request', $request);
 
         // Make sure filters are reset between tests
-        Services::injectMock('filters', Services::filters(null, false));
+        Services::injectMock('filters', service('filters', null, false));
 
         // Make sure validation is reset between tests
-        Services::injectMock('validation', Services::validation(null, false));
+        Services::injectMock('validation', service('validation', null, false));
 
         $response = $this->app
             ->setContext('web')
@@ -211,7 +228,7 @@ trait FeatureTestTrait
             ->run($routes, true);
 
         // Reset directory if it has been set
-        service('router')->setDirectory(null);
+        service('router')->setDirectory();
 
         return new TestResponse($response);
     }
@@ -321,7 +338,7 @@ trait FeatureTestTrait
 
         Services::injectMock('uri', $uri);
 
-        $request = Services::incomingrequest($config, false);
+        $request = service('incomingrequest', $config, false);
 
         $request->setMethod($method);
         $request->setProtocolVersion('1.1');
@@ -383,11 +400,11 @@ trait FeatureTestTrait
             $request->setGlobal($name, $params);
             $request->setGlobal(
                 'request',
-                $request->fetchGlobal('post') + $request->fetchGlobal('get')
+                (array) $request->fetchGlobal('post') + (array) $request->fetchGlobal('get'),
             );
         }
 
-        $_SESSION = $this->session ?? [];
+        $_SESSION = $this->session;
 
         return $request;
     }
