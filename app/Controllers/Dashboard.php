@@ -48,14 +48,16 @@ class Dashboard extends BaseController
             $query->where('connection_type', $type);
         }
 
-        $accounts = $query->orderBy('created_at', 'DESC')->paginate(10);
+        $accounts = $query
+            ->orderBy('created_at', 'DESC')
+            ->orderBy('id', 'ASC')
+            ->findAll();
 
         return view('dashboard', [
             'title'              => 'Customer Accounts - Puihaha Electric',
             'page'               => 'dashboard',
             'user'               => $user,
             'accounts'           => $accounts,
-            'pager'              => $query->pager,
             'total_accounts'     => $this->accountsQuery()->countAllResults(),
             'active_accounts'    => $this->accountsQuery()->where('status', 'active')->countAllResults(),
             'inactive_accounts'  => $this->accountsQuery()->where('status', 'inactive')->countAllResults(),

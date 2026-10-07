@@ -45,20 +45,25 @@
 
             <div class="table-responsive">
                 <table class="table table-hover align-middle">
-                    <thead class="table-dark"><tr><th>Account Number</th><th>Customer Name</th><th>Email</th><th>Phone</th><th>Connection Type</th><th>Status</th><th>Action</th></tr></thead>
+                    <thead class="table-dark"><tr><th>ID</th><th>Account Number</th><th>Customer Name</th><th>Address</th><th>Phone</th><th>Email</th><th>Meter Number</th><th>Connection Type</th><th>Status</th><th>Created At</th><th>Updated At</th><th>Action</th></tr></thead>
                     <tbody>
                         <?php if (empty($accounts)): ?>
-                            <tr><td colspan="7" class="text-center text-muted py-4">No accounts found.</td></tr>
+                            <tr><td colspan="12" class="text-center text-muted py-4">No accounts found.</td></tr>
                         <?php else: ?>
                             <?php foreach ($accounts as $account): ?>
                                 <?php $badge = ['active' => 'success', 'inactive' => 'danger', 'suspended' => 'warning'][$account['status']] ?? 'secondary'; ?>
                                 <tr>
+                                    <td><?= esc($account['id']) ?></td>
                                     <td><strong><?= esc($account['account_number']) ?></strong></td>
                                     <td><?= esc($account['customer_name']) ?></td>
-                                    <td><?= esc($account['email']) ?></td>
+                                    <td><?= esc($account['address']) ?></td>
                                     <td><?= esc($account['phone']) ?></td>
+                                    <td><?= esc($account['email']) ?></td>
+                                    <td><?= esc($account['meter_number']) ?></td>
                                     <td><?= esc(ucfirst($account['connection_type'])) ?></td>
                                     <td><span class="badge text-bg-<?= $badge ?>"><?= esc(ucfirst($account['status'])) ?></span></td>
+                                    <td><?= esc($account['created_at']) ?></td>
+                                    <td><?= esc($account['updated_at']) ?></td>
                                     <td><div class="d-flex gap-1">
                                         <a class="btn btn-sm btn-outline-primary" href="<?= base_url('account/' . $account['id']) ?>">View</a>
                                         <?php if ($is_admin): ?>
@@ -72,13 +77,6 @@
                     </tbody>
                 </table>
             </div>
-
-            <?php if ($pager && $pager->getPageCount() > 1): ?>
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mt-3">
-                    <span>Page <?= esc($pager->getCurrentPage()) ?> of <?= esc($pager->getPageCount()) ?></span>
-                    <?= $pager->links() ?>
-                </div>
-            <?php endif ?>
 
             <?php if (! $is_admin): ?>
                 <section class="account-filters mt-4" aria-labelledby="profile-heading">
